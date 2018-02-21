@@ -14,6 +14,8 @@ echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $H
 * Then we create an alias config which we will use instead of the regular git when we want to interact with our configuration repository.
 * We set a flag - local to the repository - to hide files we are not explicitly tracking yet. This is so that when you type config status and other commands later, files you are not interested in tracking will not show up as untracked.
 * Also you can add the alias definition by hand to your .bashrc or use the the fourth line provided for convenience.
+* This is packaged into a [script](./bin/config-init.sh).
+
 
 After you've executed the setup any file within the $HOME folder can be versioned with normal commands, replacing git with your newly created config alias, like:
 ```bash
@@ -81,7 +83,7 @@ config push
 ```
 * Again as a shortcut not to have to remember all these steps on any new machine you want to setup, you can create a simple script.
 ```bash
-git clone --bare https://bitbucket.org/durdn/cfg.git $HOME/.cfg
+git clone --bare https://github.com/harsha1306/config.git $HOME/.cfg
 function config {
    /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
 }
