@@ -14,8 +14,10 @@ echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $H
 * Then we create an alias config which we will use instead of the regular git when we want to interact with our configuration repository.
 * We set a flag - local to the repository - to hide files we are not explicitly tracking yet. This is so that when you type config status and other commands later, files you are not interested in tracking will not show up as untracked.
 * Also you can add the alias definition by hand to your .bashrc or use the the fourth line provided for convenience.
-* This is packaged into a [script](./bin/config-init.sh).
-
+* This is packaged into a [script](./.bin/config-init.sh) and can be run using the following single command.
+```bash
+curl -Lks https://raw.githubusercontent.com/harsha1306/config/master/.bin/config-init.sh | /bin/bash
+```
 
 After you've executed the setup any file within the $HOME folder can be versioned with normal commands, replacing git with your newly created config alias, like:
 ```bash
@@ -40,7 +42,7 @@ echo ".cfg" >> .gitignore
 ```
 * Now clone your dotfiles into a bare repository in a "dot" folder of your $HOME:
 ```bash
-git clone --bare <git-repo-url> $HOME/.cfg
+git clone --bare https://github.com/harsha1306/config.git $HOME/.cfg
 ```
 * Define the alias in the current shell scope:
 ```bash
@@ -81,7 +83,7 @@ config add .bashrc
 config commit -m "Add bashrc"
 config push
 ```
-* Again as a shortcut not to have to remember all these steps on any new machine you want to setup, you can create a simple script.
+* Again as a shortcut not to have to remember all these steps on any new machine you want to setup, you can create a simple [script](./.bin/install-config.sh).
 ```bash
 git clone --bare https://github.com/harsha1306/config.git $HOME/.cfg
 function config {
@@ -98,3 +100,8 @@ fi;
 config checkout
 config config status.showUntrackedFiles no
 ```
+* Single line command to execute the above script for the truly lazy
+```bash
+curl -Lks https://raw.githubusercontent.com/harsha1306/config/master/.bin/install-config.sh | /bin/bash
+```
+
