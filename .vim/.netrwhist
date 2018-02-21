@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/Users/harshac/.vim/bundle/ctrlp.vim'
+let g:netrw_dirhist_2='/Users/harshac/.vim/bundle/ctrlp.vim/plugin'
+let g:netrw_dirhist_3='/Users/harshac/.vim/bundle/ctrlp.vim'
+let g:netrw_dirhist_4='/Users/harshac/scratchPad/cowboy_experiments/rest_monitor/apps/rest_monitor/src'

@@ -1,0 +1,9 @@
+ctrlp.vim
+neobundle.vim
+nerdcommenter
+sudo.vim
+syntastic
+unite.vim
+vim-easymotion
+vim-powerline
+vimproc
