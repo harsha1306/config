@@ -35,7 +35,7 @@ syntax enable "enable syntax
 let g:solarized_contrast="high"
 let g:solarized_visibility="high"
 set background=dark
-colorscheme wombat256
+colorscheme solarized
 
 set t_Co=256
 
@@ -155,8 +155,8 @@ map <ScrollWheelDown> <C-E>
 
 ""Json formatting hax, requires python.
 nnoremap <Leader>jn :%!python -m json.tool<cr>
-map <Enter> o<ESC>
-map <S-Enter> O<ESC>
+noremap <CR> o<ESC>
+noremap <C-CR> O<ESC>
 
 au BufRead,BufNewFile *.tml set syntax=html
 au BufRead,BufNewFile *.hb set syntax=html
