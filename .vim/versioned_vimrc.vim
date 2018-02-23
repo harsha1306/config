@@ -161,3 +161,10 @@ au BufRead,BufNewFile *.tml set syntax=html
 au BufRead,BufNewFile *.hb set syntax=html
 au BufRead,BufNewFile *.erl,*.es,*.hrl setf erlang
 set notitle
+
+"" Erlang related tools
+set runtimepath^=~/.vim/bundle/vim-erlang-tags
+set runtimepath^=~/.vim/bundle/vim-erlang-omnicomplete
+set runtimepath^=~/.vim/bundle/vim-erlang-compiler
+set runtimepath^=~/.vim/bundle/vim-erlang-runtime
+
