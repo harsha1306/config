@@ -32,12 +32,11 @@ set list
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax enable "enable syntax
 
+set t_Co=256
 let g:solarized_contrast="high"
 let g:solarized_visibility="high"
 set background=dark
 colorscheme solarized
-
-set t_Co=256
 
 set gfn=Bitstream\ Vera\ Sans\ Mono:h10
 

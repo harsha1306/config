@@ -338,7 +338,7 @@ else
     " difference either way and I'd rather be thorough about it.
     " They can also be used by setting g:solarized_degrade to 1 in vimrc
     let s:g_back        = "#121212"
-    let s:g_base03      = "#121212"
+    let s:g_base03      = "#ff0000"
     let s:g_base02      = "#1c1c1c"
     let s:g_base01      = "#4e4e4e"
     let s:g_base00      = "#585858"
@@ -362,8 +362,8 @@ endif
 " values that get set here (ou==optional underline, ob==opt bold).
 if (has("gui_running") || &t_Co == 256) && w:solarized_termcolors != 16
     let s:c_back        = "233"
-    let s:c_base03      = "233"
-    let s:c_base02      = "234"
+    let s:c_base03      = "009"
+    let s:c_base02      = "234" 
     let s:c_base01      = "239"
     let s:c_base00      = "240"
     let s:c_base0       = "244"
@@ -543,6 +543,7 @@ exe "let s:bg_violet    = ' ctermbg=".s:c_violet ." guibg=".s:g_violet ."'"
 exe "let s:bg_blue      = ' ctermbg=".s:c_blue   ." guibg=".s:g_blue   ."'" 
 exe "let s:bg_cyan      = ' ctermbg=".s:c_cyan   ." guibg=".s:g_cyan   ."'" 
 
+exe "let s:custom_high  = ' ctermbg=".s:c_red    ." guibg=".s:g_red    ."'" 
 exe "let s:fg_none      = ' ctermfg=".s:c_none   ." guifg=".s:g_none   ."'" 
 exe "let s:fg_back      = ' ctermfg=".s:c_back   ." guifg=".s:g_back   ."'" 
 exe "let s:fg_base03    = ' ctermfg=".s:c_base03 ." guifg=".s:g_base03 ."'" 
@@ -666,8 +667,8 @@ exe "hi Todo"           . s:fg_magenta.s:bg_none   .s:fmt_bold
 "
 "Highlighting groups for various occasions
 "-----------------------------------------
-exe "hi SpecialKey"     . s:fg_base02 .s:bg_none   .s:fmt_none
-exe "hi NonText"        . s:fg_base02 .s:bg_none   .s:fmt_bold
+exe "hi SpecialKey"     . s:fg_blue .s:bg_base03   .s:fmt_none
+exe "hi NonText"        . s:fg_base02 .s:fg_red   .s:fmt_bold
 exe "hi Directory"      . s:fg_blue   .s:bg_none   .s:fmt_none
 exe "hi ErrorMsg"       . s:fg_red    .s:bg_none   .s:fmt_revr
 exe "hi IncSearch"      . s:fg_yellow .s:bg_none   .s:fmt_revr
