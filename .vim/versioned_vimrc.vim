@@ -28,15 +28,30 @@ set title
 set listchars=tab:>-,trail:~,extends:>,precedes:<
 set list
 
+"" Evil mode
+"" disables arrow keys to improve efficiency
+"""""""""""""""""""""""""
+nmap <Up> <Nop>
+nmap <Down> <Nop>
+nmap <Left> <Nop>
+nmap <Right> <Nop>
+imap <Up> <Nop>
+imap <Down> <Nop>
+imap <Left> <Nop>
+imap <Right> <Nop>
+
+
+
+
 " Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax enable "enable syntax
 
 set t_Co=256
-let g:solarized_contrast="high"
-let g:solarized_visibility="high"
+"let g:solarized_contrast="high"
+"let g:solarized_visibility="high"
 set background=dark
-colorscheme solarized
+colorscheme molokai
 
 set gfn=Bitstream\ Vera\ Sans\ Mono:h10
 
