@@ -35,10 +35,10 @@ nmap <Up> <Nop>
 nmap <Down> <Nop>
 nmap <Left> <Nop>
 nmap <Right> <Nop>
-imap <Up> <Nop>
-imap <Down> <Nop>
-imap <Left> <Nop>
-imap <Right> <Nop>
+"imap <Up> <Nop>
+"imap <Down> <Nop>
+"imap <Left> <Nop>
+"imap <Right> <Nop>
 
 
 
@@ -104,11 +104,13 @@ NeoBundle 'Shougo/vimproc', {
 NeoBundle 'Lokaltog/vim-powerline'
 NeoBundle 'scrooloose/nerdcommenter'
 NeoBundle 'kien/ctrlp.vim'
-NeoBundle 'Lokaltog/vim-easymotion'
+"NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'scrooloose/syntastic'
 
+NeoBundle 'easymotion/vim-easymotion'
+NeoBundle 'edkolev/erlang-motions.vim'
 NeoBundle 'Shougo/unite.vim'
-
+NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'sudo.vim'
 
 let bundle = neobundle#get('unite.vim')
@@ -183,3 +185,11 @@ set runtimepath^=~/.vim/bundle/vim-erlang-omnicomplete
 set runtimepath^=~/.vim/bundle/vim-erlang-compiler
 set runtimepath^=~/.vim/bundle/vim-erlang-runtime
 
+"" Mapping omnicomplete to control space
+""""""""""""""""""""""""""""
+inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
+            \ "\<lt>C-n>" :
+            \ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
+            \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
+            \ "\"\\<lt>bs>\\<lt>C-n>\"\<CR>"
+imap <C-@> <C-Space>

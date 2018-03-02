@@ -1,9 +1,11 @@
 ctrlp.vim
+erlang-motions.vim
 neobundle.vim
 nerdcommenter
 sudo.vim
 syntastic
 unite.vim
 vim-easymotion
+vim-fugitive
 vim-powerline
 vimproc
