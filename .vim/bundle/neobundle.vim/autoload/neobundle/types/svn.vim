@@ -1,7 +1,6 @@
 "=============================================================================
 " FILE: svn.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,7 +26,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neobundle#types#svn#define() "{{{
+" Global options definition. "{{{
+call neobundle#util#set_default(
+      \ 'g:neobundle#types#svn#command_path', 'svn')
+"}}}
+
+function! neobundle#types#svn#define() abort "{{{
   return s:type
 endfunction"}}}
 
@@ -35,60 +39,52 @@ let s:type = {
       \ 'name' : 'svn',
       \ }
 
-function! s:type.detect(path, opts) "{{{
+function! s:type.detect(path, opts) abort "{{{
   if isdirectory(a:path)
     return {}
   endif
 
   let type = ''
+  let uri = ''
 
-  if a:path =~# '\<\%(file\|https\?\|svn\)://'
-        \ && a:path =~? '[/.]svn[/.]'
+  if (a:path =~# '\<\%(file\|https\)://'
+        \ && a:path =~? '[/.]svn[/.]')
+        \ || a:path =~# '\<svn+ssh://'
     let uri = a:path
-    let name = split(uri, '/')[-1]
-
-    let type = 'svn'
-  elseif a:path =~# '\<\%(gh\|github\):\S\+\|://github.com/'
-    let name = substitute(split(a:path, ':')[-1],
-          \   '^//github.com/', '', '')
-    let uri =  'https://github.com/'. name
-    let uri .= '/trunk'
-
-    let name = split(name, '/')[-1]
-
     let type = 'svn'
   endif
 
-  return type == '' ?  {} :
-        \ { 'name': name, 'uri': uri, 'type' : type }
+  return type == '' ?  {} : { 'uri': uri, 'type' : type }
 endfunction"}}}
-function! s:type.get_sync_command(bundle) "{{{
-  if !executable('svn')
+function! s:type.get_sync_command(bundle) abort "{{{
+  if !executable(g:neobundle#types#svn#command_path)
     return 'E: svn command is not installed.'
   endif
 
   if !isdirectory(a:bundle.path)
-    let cmd = 'svn checkout'
+    let cmd = 'checkout'
     let cmd .= printf(' %s "%s"', a:bundle.uri, a:bundle.path)
   else
-    let cmd = 'svn up'
+    let cmd = 'up'
   endif
 
-  return cmd
+  return g:neobundle#types#svn#command_path . ' ' . cmd
 endfunction"}}}
-function! s:type.get_revision_number_command(bundle) "{{{
-  if !executable('svn')
+function! s:type.get_revision_number_command(bundle) abort "{{{
+  if !executable(g:neobundle#types#svn#command_path)
     return ''
   endif
 
-  return 'svn info'
+  return g:neobundle#types#svn#command_path . ' info'
 endfunction"}}}
-function! s:type.get_revision_lock_command(bundle) "{{{
-  if !executable('svn') || a:bundle.rev == ''
+function! s:type.get_revision_lock_command(bundle) abort "{{{
+  if !executable(g:neobundle#types#svn#command_path)
+        \ || a:bundle.rev == ''
     return ''
   endif
 
-  return 'svn up -r ' . a:bundle.rev
+  return g:neobundle#types#svn#command_path
+        \ . '  up -r ' . a:bundle.rev
 endfunction"}}}
 
 let &cpo = s:save_cpo

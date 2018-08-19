@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: raw.vim
-" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
+" FILE: vba.vim
+" AUTHOR:  Yu Huang <paulhybryant@gmail.com>
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,17 +28,17 @@ set cpo&vim
 
 " Global options definition. "{{{
 call neobundle#util#set_default(
-      \ 'g:neobundle#types#raw#calc_hash_command',
+      \ 'g:neobundle#types#vba#calc_hash_command',
       \ executable('sha1sum') ? 'sha1sum' :
       \ executable('md5sum') ? 'md5sum' : '')
 "}}}
 
-function! neobundle#types#raw#define() abort "{{{
+function! neobundle#types#vba#define() abort "{{{
   return s:type
 endfunction"}}}
 
 let s:type = {
-      \ 'name' : 'raw',
+      \ 'name' : 'vba',
       \ }
 
 function! s:type.detect(path, opts) abort "{{{
@@ -46,27 +46,36 @@ function! s:type.detect(path, opts) abort "{{{
   let type = ''
   let name = ''
 
-  if a:path =~# '^https:.*\.vim$'
+  if a:path =~# '^https:.*\.vba\(\.gz\)\?$'
     " HTTPS
+    " .*.vba / .*.vba.gz
+    let name = fnamemodify(split(a:path, ':')[-1],
+          \ ':s?/$??:t:s?\c\.vba\(\.gz\)*\s*$??')
+    let type = 'vba'
+  elseif a:path =~# '\.vba\(\.gz\)\?$' && filereadable(a:path)
+    " local
+    " .*.vba
+    let name = fnamemodify(a:path, ':t:s?\c\.vba\(\.gz\)*\s*$??')
+    let type = 'vba'
+  endif
 
-    let name = neobundle#util#name_conversion(a:path)
-
-    let type = 'raw'
-  elseif a:path =~#
-        \ '^https://www\.vim\.org/scripts/download_script.php?src_id=\d\+$'
-    " For www.vim.org
-    let name = 'vim-scripts-' . matchstr(a:path, '\d\+$')
-    let type = 'raw'
+  if a:path =~# '^https:.*\.vmb$'
+    " HTTPS
+    " .*.vmb
+    let name = fnamemodify(split(a:path, ':')[-1],
+          \ ':s?/$??:t:s?\c\.vba\s*$??')
+    let type = 'vba'
+  elseif a:path =~# '\.vmb$' && filereadable(a:path)
+    " local
+    " .*.vmb
+    let name = fnamemodify(a:path, ':t:s?\c\.vba\s*$??')
+    let type = 'vba'
   endif
 
   return type == '' ?  {} :
         \ { 'name': name, 'uri' : a:path, 'type' : type }
 endfunction"}}}
 function! s:type.get_sync_command(bundle) abort "{{{
-  if a:bundle.script_type == ''
-    return 'E: script_type is not found.'
-  endif
-
   let path = a:bundle.path
 
   if !isdirectory(path)
@@ -78,23 +87,44 @@ function! s:type.get_sync_command(bundle) abort "{{{
         \ 'type__filename', fnamemodify(a:bundle.uri, ':t'))
   let a:bundle.type__filepath = filename
 
-  let cmd = neobundle#util#wget(a:bundle.uri, filename)
+  let cmd = ''
+  if filereadable(a:bundle.uri)
+    call writefile(readfile(a:bundle.uri, 'b'), filename, 'b')
+  else
+    let cmd = neobundle#util#wget(a:bundle.uri, filename)
+    if cmd =~# '^E:'
+      return cmd
+    endif
+    let cmd .= ' && '
+  endif
+
+  let cmd .= printf('%s -u NONE' .
+        \ ' -c "set nocompatible"' .
+        \ ' -c "filetype plugin on"' .
+        \ ' -c "runtime plugin/gzip.vim"' .
+        \ ' -c "runtime plugin/vimballPlugin.vim"' .
+        \ ' -c "edit %s"' .
+        \ ' -c "UseVimball %s"' .
+        \ ' -c "q"', v:progpath, filename, path)
+  " let cmd .= printf(' rm %s &&', filename)
+  " let cmd .= printf(' rm %s/.VimballRecord', path)
 
   return cmd
 endfunction"}}}
 function! s:type.get_revision_number_command(bundle) abort "{{{
-  if g:neobundle#types#raw#calc_hash_command == ''
+  if g:neobundle#types#vba#calc_hash_command == ''
     return ''
   endif
 
-  if !filereadable(a:bundle.type__filepath)
+  if !has_key(a:bundle, 'type__filepath')
+        \ || !filereadable(a:bundle.type__filepath)
     " Not Installed.
     return ''
   endif
 
   " Calc hash.
   return printf('%s %s',
-        \ g:neobundle#types#raw#calc_hash_command,
+        \ g:neobundle#types#vba#calc_hash_command,
         \ a:bundle.type__filepath)
 endfunction"}}}
 function! s:type.get_revision_lock_command(bundle) abort "{{{

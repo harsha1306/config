@@ -71,7 +71,7 @@ endif
 
 filetype off
 
-call neobundle#rc(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
 
 "let NeoBundle manage NeoBundle
 NeoBundleFetch 'Shougo/neobundle.vim'
@@ -86,15 +86,17 @@ NeoBundle 'Shougo/vimproc', {
       \    },
       \ }
 
-NeoBundle 'Lokaltog/vim-powerline'
-NeoBundle 'scrooloose/nerdcommenter'
-NeoBundle 'kien/ctrlp.vim'
-NeoBundle 'Lokaltog/vim-easymotion'
-NeoBundle 'scrooloose/syntastic'
+NeoBundleFetch 'Lokaltog/vim-powerline'
+NeoBundleFetch 'scrooloose/nerdcommenter'
+NeoBundleFetch 'kien/ctrlp.vim'
+NeoBundleFetch 'Lokaltog/vim-easymotion'
+NeoBundleFetch 'scrooloose/syntastic'
 
-NeoBundle 'Shougo/unite.vim'
+NeoBundleFetch 'Shougo/unite.vim'
 
-NeoBundle 'sudo.vim'
+NeoBundleFetch 'sudo.vim'
+
+call neobundle#end()
 
 let bundle = neobundle#get('unite.vim')
 
@@ -127,7 +129,7 @@ let mapleader = ","
 set shellcmdflag=-ic
 
 "UNITE OPTIONS
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
+"call unite#filters#matcher_default#use(['matcher_fuzzy'])
 nnoremap <C-o> :Unite file_rec/async<cr>
 nnoremap <C-i> :Unite -quick-match buffer<cr>
 map ,/ :Unite grep:.<CR>

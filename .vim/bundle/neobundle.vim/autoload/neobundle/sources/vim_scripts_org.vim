@@ -1,7 +1,6 @@
 "=============================================================================
 " FILE: vim_scripts_org.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,11 +26,11 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:Cache = vital#of('unite').import('System.Cache')
+let s:Cache = unite#util#get_vital_cache()
 
 let s:repository_cache = []
 
-function! neobundle#sources#vim_scripts_org#define() "{{{
+function! neobundle#sources#vim_scripts_org#define() abort "{{{
   return s:source
 endfunction"}}}
 
@@ -40,15 +39,10 @@ let s:source = {
       \ 'short_name' : 'vim.org',
       \ }
 
-function! s:source.gather_candidates(args, context) "{{{
-  if !executable('curl') && !executable('wget')
-    call unite#print_error(
-          \ '[neobundle/search:vim-scripts.org] '.
-          \ 'curl or wget command is not available!')
-    return []
-  endif
-
-  let repository = 'http://vim-scripts.org/api/scripts_recent.json'
+function! s:source.gather_candidates(args, context) abort "{{{
+  let repository =
+        \ 'https://raw.githubusercontent.com/vim-scraper/'
+        \ .'vim-scraper.github.com/master/api/scripts_recent.json'
 
   call unite#print_message(
         \ '[neobundle/search:vim-scripts.org] repository: ' . repository)
@@ -68,7 +62,7 @@ function! s:source.gather_candidates(args, context) "{{{
   catch
     call unite#print_error(
           \ '[neobundle/search:vim-scripts.org] '
-          \ .'Error occured in loading cache.')
+          \ .'Error occurred in loading cache.')
     call unite#print_error(
           \ '[neobundle/search:vim-scripts.org] '
           \ .'Please re-make cache by <Plug>(unite_redraw) mapping.')
@@ -79,7 +73,7 @@ function! s:source.gather_candidates(args, context) "{{{
 endfunction"}}}
 
 " Misc.
-function! s:get_repository_plugins(context, path) "{{{
+function! s:get_repository_plugins(context, path) abort "{{{
   let cache_dir = neobundle#get_neobundle_dir() . '/.neobundle'
 
   if a:context.is_redraw || !s:Cache.filereadable(cache_dir, a:path)
@@ -87,7 +81,8 @@ function! s:get_repository_plugins(context, path) "{{{
     let cache_path = s:Cache.getfilename(cache_dir, a:path)
 
     call unite#print_message(
-          \ '[neobundle/search:vim-scripts.org] Reloading cache from ' . a:path)
+          \ '[neobundle/search:vim-scripts.org] '
+          \ .'Reloading cache from ' . a:path)
     redraw
 
     if s:Cache.filereadable(cache_dir, a:path)
@@ -96,18 +91,23 @@ function! s:get_repository_plugins(context, path) "{{{
 
     let temp = unite#util#substitute_path_separator(tempname())
 
-    if executable('curl')
-      let cmd = 'curl --fail -s -o "' . temp . '" '. a:path
-    elseif executable('wget')
-      let cmd = 'wget -q -O "' . temp . '" ' . a:path
+    let cmd = neobundle#util#wget(a:path, temp)
+    if cmd =~# '^E:'
+      call unite#print_error(
+            \ '[neobundle/search:vim-scripts.org] '.
+            \ 'curl or wget command is not available!')
+      return []
     endif
 
     let result = unite#util#system(cmd)
 
     if unite#util#get_last_status()
-      call unite#print_message('[neobundle/search:vim-scripts.org] ' . cmd)
-      call unite#print_error('[neobundle/search:vim-scripts.org] Error occured!')
-      call unite#print_error(result)
+      call unite#print_message(
+            \ '[neobundle/search:vim-scripts.org] ' . cmd)
+      call unite#print_message(
+            \ '[neobundle/search:vim-scripts.org] ' . result)
+      call unite#print_error(
+            \ '[neobundle/search:vim-scripts.org] Error occurred!')
       return []
     elseif !filereadable(temp)
       call unite#print_error('[neobundle/search:vim-scripts.org] '.
@@ -134,7 +134,7 @@ function! s:get_repository_plugins(context, path) "{{{
   return s:repository_cache
 endfunction"}}}
 
-function! s:convert_vim_scripts_data(data) "{{{
+function! s:convert_vim_scripts_data(data) abort "{{{
   return map(copy(a:data), "{
         \ 'name' : v:val.n,
         \ 'raw_type' : v:val.t,
@@ -144,7 +144,7 @@ function! s:convert_vim_scripts_data(data) "{{{
         \ }")
 endfunction"}}}
 
-function! s:convert2script_type(type) "{{{
+function! s:convert2script_type(type) abort "{{{
   if a:type ==# 'utility'
     return 'plugin'
   elseif a:type ==# 'color scheme'

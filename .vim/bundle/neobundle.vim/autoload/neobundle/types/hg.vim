@@ -1,7 +1,6 @@
 "=============================================================================
 " FILE: hg.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,11 +28,13 @@ set cpo&vim
 
 " Global options definition. "{{{
 call neobundle#util#set_default(
+      \ 'g:neobundle#types#hg#command_path', 'hg')
+call neobundle#util#set_default(
       \ 'g:neobundle#types#hg#default_protocol', 'https',
       \ 'g:neobundle_default_hg_protocol')
 "}}}
 
-function! neobundle#types#hg#define() "{{{
+function! neobundle#types#hg#define() abort "{{{
   return s:type
 endfunction"}}}
 
@@ -41,16 +42,13 @@ let s:type = {
       \ 'name' : 'hg',
       \ }
 
-function! s:type.detect(path, opts) "{{{
+function! s:type.detect(path, opts) abort "{{{
   if isdirectory(a:path.'/.hg')
     " Local repository.
-    return { 'name' : split(a:path, '/')[-1],
-          \  'uri' : a:path, 'type' : 'hg' }
+    return { 'uri' : a:path, 'type' : 'hg' }
   elseif isdirectory(a:path)
     return {}
   endif
-
-  let type = ''
 
   let protocol = matchstr(a:path, '^.\{-}\ze://')
   if protocol == '' || a:path =~#
@@ -60,6 +58,13 @@ function! s:type.detect(path, opts) "{{{
           \ g:neobundle#types#hg#default_protocol)
   endif
 
+  if protocol !=# 'https' && protocol !=# 'ssh'
+    call neobundle#util#print_error(
+          \ 'Path: ' . a:path . ' The protocol "' . protocol .
+          \ '" is unsecure and invalid.')
+    return {}
+  endif
+
   if a:path =~# '\<\%(bb\|bitbucket\):'
     let name = substitute(split(a:path, ':')[-1],
           \   '^//bitbucket.org/', '', '')
@@ -67,44 +72,45 @@ function! s:type.detect(path, opts) "{{{
           \ 'ssh://hg@bitbucket.org/' . name :
           \ protocol . '://bitbucket.org/' . name
   elseif a:path =~? '[/.]hg[/.@]'
-          \ || (a:path =~# '\<https\?://bitbucket\.org/'
-          \ || a:path =~# '\<https://code\.google\.com/'
+          \ || (a:path =~# '\<https://bitbucket\.org/'
           \ || get(a:opts, 'type', '') ==# 'hg')
     let uri = a:path
   else
     return {}
   endif
 
-  return { 'name': neobundle#util#name_conversion(uri),
-        \  'uri' : uri, 'type' : 'hg' }
+  return { 'uri' : uri, 'type' : 'hg' }
 endfunction"}}}
-function! s:type.get_sync_command(bundle) "{{{
-  if !executable('hg')
+function! s:type.get_sync_command(bundle) abort "{{{
+  if !executable(g:neobundle#types#hg#command_path)
     return 'E: "hg" command is not installed.'
   endif
 
   if !isdirectory(a:bundle.path)
-    let cmd = 'hg clone'
+    let cmd = 'clone'
     let cmd .= printf(' %s "%s"', a:bundle.uri, a:bundle.path)
   else
-    let cmd = 'hg pull -u'
+    let cmd = 'pull -u'
   endif
 
-  return cmd
+  return g:neobundle#types#hg#command_path . ' ' . cmd
 endfunction"}}}
-function! s:type.get_revision_number_command(bundle) "{{{
-  if !executable('hg')
+function! s:type.get_revision_number_command(bundle) abort "{{{
+  if !executable(g:neobundle#types#hg#command_path)
     return ''
   endif
 
-  return 'hg heads --quiet --rev default'
+  return g:neobundle#types#hg#command_path
+        \ . ' heads --quiet --rev default'
 endfunction"}}}
-function! s:type.get_revision_lock_command(bundle) "{{{
-  if !executable('hg') || a:bundle.rev == ''
+function! s:type.get_revision_lock_command(bundle) abort "{{{
+  if !executable(g:neobundle#types#hg#command_path)
+        \ || a:bundle.rev == ''
     return ''
   endif
 
-  return 'hg up ' . a:bundle.rev
+  return g:neobundle#types#hg#command_path
+        \ . ' up ' . a:bundle.rev
 endfunction"}}}
 
 let &cpo = s:save_cpo

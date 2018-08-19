@@ -1,11 +1,16 @@
-if has('vim_starting')
-  set nocompatible                " recommend
-  execute 'set' 'runtimepath+='.getcwd()
+" Basic commands test.
+set verbose=1
+
+let path = expand('~/test-bundle/'.fnamemodify(expand('<sfile>'), ':t:r'))
+
+if isdirectory(path)
+  let rm_command = neobundle#util#is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+  call system(printf('%s "%s"', rm_command, path))
 endif
 
-let testdir = expand('~/neobundle-test/bundles', 1)
+call mkdir(path, 'p')
 
-call neobundle#rc(expand(testdir, 1))
+call neobundle#begin(path)
 
 let g:neobundle#types#git#default_protocol = 'https'
 
@@ -15,14 +20,8 @@ let g:neobundle#types#git#default_protocol = 'https'
 " Original repositories in github.
 NeoBundle 'Shougo/neocomplcache-clang.git'
 
-" Omit suffix.
-NeoBundle 'Shougo/vimshell'
-
 " Vim-script repositories.
 NeoBundle 'rails.vim'
-
-" Non-github repos.
-NeoBundle 'git://git.wincent.com/command-t.git'
 
 " Username with dashes.
 NeoBundle 'vim-scripts/ragtag.vim'
@@ -48,15 +47,11 @@ NeoBundle 'github:mattn/gist-vim.git'
 " Camel case.
 NeoBundle 'vim-scripts/RubySinatra'
 
-" Non-git repos.
-NeoBundle 'http://svn.macports.org/repository/macports/contrib/mpvim/'
-
 " With options.
-NeoBundle 'git://github.com/Shougo/unite.vim.git', {'directory' : 'unite'}
 NeoBundle 'Shougo/vimshell', '3787e5'
 
-" Nosync repos.
-NeoBundle 'muttator', {'type' : 'nosync', 'base' : '~/.vim/bundle'}
+" None repos.
+NeoBundle 'muttator', {'type' : 'none', 'base' : '~/.vim/bundle'}
 
 " Raw repos.
 NeoBundle 'https://raw.github.com/m2ym/rsense/master/etc/rsense.vim',
@@ -94,7 +89,6 @@ call neobundle#source(['The-NERD-tree'])
 
 NeoBundleLazy 'masudaK/vim-python'
 NeoBundleLazy 'klen/python-mode'
-autocmd FileType python* NeoBundleSource python-mode
 
 NeoBundleLazy 'Rip-Rip/clang_complete', {
       \ 'autoload' : {
@@ -103,9 +97,13 @@ NeoBundleLazy 'Rip-Rip/clang_complete', {
       \ }
 
 " script_type support.
-NeoBundle 'bronzehedwick/impactjs-colorscheme', {'script_type' : 'colors'}
 NeoBundle 'https://raw.github.com/m2ym/rsense/master/etc/rsense.vim',
        \ {'script_type' : 'plugin'}
+
+" Fetch only.
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+call neobundle#end()
 
 filetype plugin indent on       " required!
 
@@ -117,7 +115,3 @@ set wildignore+=.git
 set wildignore+=.git/*
 set wildignore+=*/.git/*
 
-" Fetch only.
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-autocmd VimEnter * NeoBundleCheck
